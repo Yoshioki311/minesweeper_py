@@ -15,6 +15,9 @@ class Matrix(object):
         self.mine_loc = []
         for i in range(mines):
             rand_loc = [random.randint(0, row - 1), random.randint(0, col - 1)]
+            for loc in self.mine_loc:
+                while rand_loc == loc:
+                    rand_loc = [random.randint(0, row - 1), random.randint(0, col - 1)]
             self.mine_loc.append(rand_loc)
         
         # Initiate game board
