@@ -53,6 +53,14 @@ border_shadow = (100, 100, 100)
 border_light = (244, 244, 244)
 #################################################
 
+############### Helper functions ################
+def row_to_coord(row):
+    return row * TILE_SIZE + BORDER_WIDTH + HEADER_HEIGHT
+
+def col_to_coord(col):
+    return col * TILE_SIZE + BORDER_WIDTH
+#################################################
+
 ############# GUI related functions #############
 def place_tile(x, y):
     gameDisplay.blit(tile_unfliped,(x, y))
@@ -85,6 +93,35 @@ def draw_all_boxes():
                          [display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, display_height-BORDER_WIDTH+BORDER_LINE_WEIGHT],
                          [BORDER_WIDTH-BORDER_LINE_WEIGHT, display_height-BORDER_WIDTH+BORDER_LINE_WEIGHT]]
     draw_box(lower_inner_upper, lower_inner_lower)
+
+def refresh_game_board():
+    for x in range(board_row):
+        for y in range(board_col):
+            # Calculate pygame coordinates
+            coord_y = row_to_coord(x)
+            coord_x = col_to_coord(y)
+            # Tile in fliped state
+            if game_board.status[x][y] == True:
+                if game_board.board[x][y] == 1:
+                    gameDisplay.blit(fliped_one,(coord_x, coord_y))
+                elif game_board.board[x][y] == 2:
+                    gameDisplay.blit(fliped_two,(coord_x, coord_y))
+                elif game_board.board[x][y] == 3:
+                    gameDisplay.blit(fliped_three,(coord_x, coord_y))
+                elif game_board.board[x][y] == 4:
+                    gameDisplay.blit(fliped_four,(coord_x, coord_y))
+                elif game_board.board[x][y] == 5:
+                    gameDisplay.blit(fliped_five,(coord_x, coord_y))
+                elif game_board.board[x][y] == 6:
+                    gameDisplay.blit(fliped_six,(coord_x, coord_y))
+                elif game_board.board[x][y] == 7:
+                    gameDisplay.blit(fliped_seven,(coord_x, coord_y))
+                elif game_board.board[x][y] == 8:
+                    gameDisplay.blit(fliped_eight,(coord_x, coord_y))
+                else:
+                    gameDisplay.blit(tile_pressed,(coord_x, coord_y))
+            else:
+                gameDisplay.blit(tile_unfliped,(coord_x, coord_y))
 #################################################
 
 gameDisplay.fill(background_grey)
@@ -116,10 +153,11 @@ while not bombed:
 
                 print("Col: " + str(clicked_col)) #col
                 print("Row: " + str(clicked_row)) #row
+                game_board.status[clicked_row][clicked_col] = True
             elif pygame.mouse.get_pressed() == (0, 1, 0):
                 print(pygame.mouse.get_pos())
     # print(event)
-    
+    refresh_game_board()
     pygame.display.update()
     clock.tick(60)
 
