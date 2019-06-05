@@ -33,6 +33,14 @@ bombed = False
 
 tile_unfliped = pygame.image.load('img/tile.png')
 tile_pressed = pygame.image.load('img/tile_pressed.png')
+fliped_one = pygame.image.load('img/fliped_one')
+fliped_two = pygame.image.load('img/fliped_two')
+fliped_three = pygame.image.load('img/fliped_three')
+fliped_four = pygame.image.load('img/fliped_four')
+fliped_five = pygame.image.load('img/fliped_five')
+fliped_six = pygame.image.load('img/fliped_six')
+fliped_seven = pygame.image.load('img/fliped_seven')
+fliped_eight = pygame.image.load('img/fliped_eight')
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('MineSweeper')
