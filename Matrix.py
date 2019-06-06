@@ -2,10 +2,17 @@ import random
 
 class Matrix(object):
     def __init__(self):
+        # Game info
         self.col = 0
         self.row = 0
         self.mines = 0
+        self.mine_loc = []
+
+        # Board related
         self.board = []
+        self.mask = []
+        self.status = []
+
     def resize(self, row, col, mines):
         self.row = row # Number of rows of the board
         self.col = col # Number of cols of the board
@@ -48,18 +55,6 @@ class Matrix(object):
             self.status.append([])
             for y in range(col):
                 self.status[x].append(False)
-    def print_board(self):
-        for x in range(len(self.board)):
-            for y in range(len(self.board[x])):
-                print(self.board[x][y], end=" ")
-            print(" ")
-        print("\n")
-    def print_mask(self):
-        for x in range(len(self.mask)):
-            for y in range(len(self.mask[x])):
-                print(self.mask[x][y], end=" ")
-            print(" ")
-        print("\n")
     def reveal(self, row, col):
         if row < 0 or row >= self.row or col < 0 or col >= self.col:
             return True
@@ -121,3 +116,18 @@ class Matrix(object):
                     if y < len(self.board[x]) - 1 and self.board[x+1][y+1] == 9:
                         # print("case 9")
                         self.board[x][y] = self.board[x][y] + 1
+        
+    ################### Utility Functions ####################
+    def print_board(self):
+        for x in range(len(self.board)):
+            for y in range(len(self.board[x])):
+                print(self.board[x][y], end=" ")
+            print(" ")
+        print("\n")
+    def print_mask(self):
+        for x in range(len(self.mask)):
+            for y in range(len(self.mask[x])):
+                print(self.mask[x][y], end=" ")
+            print(" ")
+        print("\n")
+    ##########################################################
