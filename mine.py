@@ -62,6 +62,11 @@ def row_to_coord(row):
 
 def col_to_coord(col):
     return col * TILE_SIZE + BORDER_WIDTH
+
+def get_clicked_pos(mouse_pos):
+    clicked_row = round((mouse_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
+    clicked_col = round((mouse_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
+    return (clicked_row, clicked_col)
 #################################################
 
 ############# GUI related functions #############
@@ -141,29 +146,20 @@ while not quit_game:
             quit_game = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed() == (1, 0, 0):
-                clicked_pos = pygame.mouse.get_pos()
-                
-                clicked_row = round((clicked_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
-                clicked_col = round((clicked_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
+                pos = get_clicked_pos(pygame.mouse.get_pos())
+                if game_board.flagged[pos[0]][pos[1]] == True:
+                    break
+                bombed = game_board.reveal(pos[0], pos[1])
 
-                print("Col: " + str(clicked_col)) #col
-                print("Row: " + str(clicked_row)) #row
-                # game_board.status[clicked_row][clicked_col] = True
-                if game_board.flagged[clicked_row][clicked_col] == True:
-                    break
-                bombed = game_board.reveal(clicked_row, clicked_col)
             elif pygame.mouse.get_pressed() == (0, 0, 1):
-                clicked_pos = pygame.mouse.get_pos()
-                
-                clicked_row = round((clicked_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
-                clicked_col = round((clicked_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
-                
-                if game_board.status[clicked_row][clicked_col] == True:
+                pos = get_clicked_pos(pygame.mouse.get_pos())
+                if game_board.status[pos[0]][pos[1]] == True:
                     break
-                game_board.flagged[clicked_row][clicked_col] = not game_board.flagged[clicked_row][clicked_col]
+                game_board.flagged[pos[0]][pos[1]] = not game_board.flagged[pos[0]][pos[1]]
+
             elif pygame.mouse.get_pressed() == (0, 1, 0):
                 print(pygame.mouse.get_pos())
-    # print(event)
+                
     refresh_game_board()
     pygame.display.update()
     clock.tick(60)
