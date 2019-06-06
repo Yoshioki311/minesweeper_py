@@ -12,6 +12,7 @@ class Matrix(object):
         self.board = []
         self.mask = []
         self.status = []
+        self.flagged = []
 
     def resize(self, row, col, mines):
         self.row = row # Number of rows of the board
@@ -55,6 +56,12 @@ class Matrix(object):
             self.status.append([])
             for y in range(col):
                 self.status[x].append(False)
+
+        self.flagged = []
+        for x in range(row):
+            self.flagged.append([])
+            for y in range(col):
+                self.flagged[x].append(False)
     def reveal(self, row, col):
         if row < 0 or row >= self.row or col < 0 or col >= self.col:
             return True

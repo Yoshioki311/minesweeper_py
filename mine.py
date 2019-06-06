@@ -42,6 +42,8 @@ fliped_five = pygame.image.load('img/fliped_five.png')
 fliped_six = pygame.image.load('img/fliped_six.png')
 fliped_seven = pygame.image.load('img/fliped_seven.png')
 fliped_eight = pygame.image.load('img/fliped_eight.png')
+mine = pygame.image.load('img/mine.png')
+flag = pygame.image.load('img/flag.png')
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('MineSweeper')
@@ -102,7 +104,9 @@ def refresh_game_board():
             coord_y = row_to_coord(x)
             coord_x = col_to_coord(y)
             # Tile in fliped state
-            if game_board.status[x][y] == True:
+            if game_board.flagged[x][y] == True:
+                gameDisplay.blit(flag,(coord_x, coord_y))
+            elif game_board.status[x][y] == True:
                 if game_board.board[x][y] == 1:
                     gameDisplay.blit(fliped_one,(coord_x, coord_y))
                 elif game_board.board[x][y] == 2:
@@ -119,6 +123,8 @@ def refresh_game_board():
                     gameDisplay.blit(fliped_seven,(coord_x, coord_y))
                 elif game_board.board[x][y] == 8:
                     gameDisplay.blit(fliped_eight,(coord_x, coord_y))
+                elif game_board.board[x][y] == 9:
+                    gameDisplay.blit(mine,(coord_x, coord_y))
                 else:
                     gameDisplay.blit(tile_pressed,(coord_x, coord_y))
             else:
@@ -134,21 +140,27 @@ while not quit_game:
         if event.type == pygame.QUIT:
             quit_game = True
         if event.type == pygame.MOUSEBUTTONDOWN:
-            
             if pygame.mouse.get_pressed() == (1, 0, 0):
                 clicked_pos = pygame.mouse.get_pos()
                 
                 clicked_row = round((clicked_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
                 clicked_col = round((clicked_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
 
-                pressed_pos_x = clicked_col*TILE_SIZE + BORDER_WIDTH
-                pressed_pos_y = clicked_row*TILE_SIZE + BORDER_WIDTH + HEADER_HEIGHT
-                gameDisplay.blit(tile_pressed,(pressed_pos_x, pressed_pos_y))
-
                 print("Col: " + str(clicked_col)) #col
                 print("Row: " + str(clicked_row)) #row
                 # game_board.status[clicked_row][clicked_col] = True
+                if game_board.flagged[clicked_row][clicked_col] == True:
+                    break
                 bombed = game_board.reveal(clicked_row, clicked_col)
+            elif pygame.mouse.get_pressed() == (0, 0, 1):
+                clicked_pos = pygame.mouse.get_pos()
+                
+                clicked_row = round((clicked_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
+                clicked_col = round((clicked_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
+                
+                if game_board.status[clicked_row][clicked_col] == True:
+                    break
+                game_board.flagged[clicked_row][clicked_col] = not game_board.flagged[clicked_row][clicked_col]
             elif pygame.mouse.get_pressed() == (0, 1, 0):
                 print(pygame.mouse.get_pos())
     # print(event)
