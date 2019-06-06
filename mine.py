@@ -29,6 +29,7 @@ display_height = TILE_SIZE * board_row + 2*BORDER_WIDTH + HEADER_HEIGHT
 print(display_height)
 print(display_width)
 
+quit_game = False
 bombed = False
 
 tile_unfliped = pygame.image.load('img/tile.png')
@@ -125,20 +126,13 @@ def refresh_game_board():
 #################################################
 
 gameDisplay.fill(background_grey)
-
 draw_all_boxes()
 
-# Draw tiles
-print("Drawing tiles")
-for i in range(board_col):
-        for j in range(board_row):
-            place_tile(i * TILE_SIZE + BORDER_WIDTH, j * TILE_SIZE + BORDER_WIDTH + HEADER_HEIGHT)
-
-while not bombed:
+while not quit_game:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            bombed = True
+            quit_game = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             
             if pygame.mouse.get_pressed() == (1, 0, 0):
@@ -153,7 +147,8 @@ while not bombed:
 
                 print("Col: " + str(clicked_col)) #col
                 print("Row: " + str(clicked_row)) #row
-                game_board.status[clicked_row][clicked_col] = True
+                # game_board.status[clicked_row][clicked_col] = True
+                bombed = game_board.reveal(clicked_row, clicked_col)
             elif pygame.mouse.get_pressed() == (0, 1, 0):
                 print(pygame.mouse.get_pos())
     # print(event)
