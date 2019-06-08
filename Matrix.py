@@ -64,19 +64,19 @@ class Matrix(object):
                 self.flagged[x].append(False)
     def reveal(self, row, col):
         if row < 0 or row >= self.row or col < 0 or col >= self.col:
-            return True
+            return
         if self.status[row][col] == True:
-            return True
+            return
         
         # 分情况
         if self.board[row][col] == 9:
             self.status[row][col] = True
             self.mask[row][col] = self.board[row][col]
-            return False
+            return
         elif self.board[row][col] != 0:
             self.status[row][col] = True
             self.mask[row][col] = self.board[row][col]
-            return True
+            return
         else:
             self.status[row][col] = True
             self.mask[row][col] = self.board[row][col]

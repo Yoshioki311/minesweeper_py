@@ -18,7 +18,7 @@ game_board = Matrix.Matrix()
 game_board.resize(board_row, board_col, board_mines)
 game_board.get_count()
 game_board.print_board()
-game_board.print_mask()
+# game_board.print_mask()
 
 ############ Initiate pygame settings ###########
 pygame.init()
@@ -147,19 +147,24 @@ while not quit_game:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed() == (1, 0, 0):
                 pos = get_clicked_pos(pygame.mouse.get_pos())
+                if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
+                    continue
                 if game_board.flagged[pos[0]][pos[1]] == True:
                     break
-                bombed = game_board.reveal(pos[0], pos[1])
-
+                game_board.reveal(pos[0], pos[1])
+                bombed = (game_board.board[pos[0]][pos[1]] == 9)
+                # print(bombed)
             elif pygame.mouse.get_pressed() == (0, 0, 1):
                 pos = get_clicked_pos(pygame.mouse.get_pos())
+                if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
+                    continue
                 if game_board.status[pos[0]][pos[1]] == True:
                     break
                 game_board.flagged[pos[0]][pos[1]] = not game_board.flagged[pos[0]][pos[1]]
 
             elif pygame.mouse.get_pressed() == (0, 1, 0):
                 print(pygame.mouse.get_pos())
-                
+
     refresh_game_board()
     pygame.display.update()
     clock.tick(60)
