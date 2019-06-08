@@ -147,8 +147,10 @@ while not quit_game:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed() == (1, 0, 0):
                 pos = get_clicked_pos(pygame.mouse.get_pos())
+                ######### Probably need to change #########
                 if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
                     continue
+                ###########################################
                 if game_board.flagged[pos[0]][pos[1]] == True:
                     break
                 game_board.reveal(pos[0], pos[1])
@@ -156,8 +158,10 @@ while not quit_game:
                 # print(bombed)
             elif pygame.mouse.get_pressed() == (0, 0, 1):
                 pos = get_clicked_pos(pygame.mouse.get_pos())
+                ######### Probably need to change #########
                 if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
                     continue
+                ###########################################
                 if game_board.status[pos[0]][pos[1]] == True:
                     break
                 game_board.flagged[pos[0]][pos[1]] = not game_board.flagged[pos[0]][pos[1]]
