@@ -144,7 +144,7 @@ def message_display(text):
 def game_loop():
     bombed = False
 
-    game_board.resize(board_row, board_col, board_mines)
+    game_board.reset(board_row, board_col, board_mines)
     game_board.get_count()
     game_board.print_board()
 

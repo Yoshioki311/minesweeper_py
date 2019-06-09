@@ -14,7 +14,7 @@ class Matrix(object):
         self.status = []
         self.flagged = []
 
-    def resize(self, row, col, mines):
+    def reset(self, row, col, mines):
         self.row = row # Number of rows of the board
         self.col = col # Number of cols of the board
         self.mines = mines # Number of mines on the board
