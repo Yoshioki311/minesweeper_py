@@ -48,7 +48,7 @@ clock = pygame.time.Clock()
 background_grey = (158, 158, 158)
 border_shadow = (100, 100, 100)
 border_light = (244, 244, 244)
-font_black = (0, 0, 0)
+font_white = (255, 255, 255)
 #################################################
 
 ############### Helper functions ################
@@ -130,6 +130,15 @@ def refresh_game_board():
             else:
                 gameDisplay.blit(tile_unfliped,(coord_x, coord_y))
 
+def message_display(text):
+    largeText = pygame.font.Font('freesansbold.ttf', 50)
+    textSurf = largeText.render(text, True, font_white)
+    textRect = textSurf.get_rect()
+    textRect.center = ((display_width/2), (display_height/2))
+    gameDisplay.blit(textSurf, textRect)
+    pygame.display.update()
+    time.sleep(2)
+
 def reveal_mine():
     for x in range(board_row):
         for y in range(board_col):
@@ -138,14 +147,6 @@ def reveal_mine():
             coord_x = col_to_coord(y)
             if game_board.board[x][y] == 9:
                 gameDisplay.blit(mine,(coord_x, coord_y))
-
-def message_display(text):
-    largeText = pygame.font.Font('freesansbold.ttf', 50)
-    textSurf = largeText.render(text, True, font_black)
-    textRect = textSurf.get_rect()
-    textRect.center = ((display_width/2), (display_height/2))
-    reveal_mine()
-    # gameDisplay.blit(textSurf, textRect)
     pygame.display.update()
     time.sleep(2)
 #################################################
@@ -192,16 +193,23 @@ def game_loop():
                 elif pygame.mouse.get_pressed() == (0, 1, 0):
                     print(pygame.mouse.get_pos())
 
-        if bombed:
+        refresh_game_board()
+
+        flipped = game_board.count_revealed();
+        if flipped == board_row * board_col - board_mines:
+            message_display('Win!')
             break
 
-        refresh_game_board()
+        if bombed:
+            reveal_mine()
+            break
+        
         pygame.display.update()
         clock.tick(60)
 #################################################
 
 while True:
     game_loop()
-    message_display('Bombed')
+    
 pygame.quit()
 quit()

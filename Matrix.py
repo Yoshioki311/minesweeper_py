@@ -54,6 +54,15 @@ class Matrix(object):
             self.flagged.append([])
             for y in range(col):
                 self.flagged[x].append(False)
+    
+    def count_revealed(self):
+        count = 0
+        for x in range(len(self.board)):
+            for y in range(len(self.board[x])):
+                if self.status[x][y] == True:
+                    count = count + 1
+        return count
+
     def reveal(self, row, col):
         if row < 0 or row >= self.row or col < 0 or col >= self.col:
             return
@@ -73,6 +82,7 @@ class Matrix(object):
             self.reveal(row-1, col+1)
             self.reveal(row+1, col-1)
             self.reveal(row-1, col-1)
+
     def get_count(self):
         for x in range(len(self.board)):
             for y in range(len(self.board[x])):
