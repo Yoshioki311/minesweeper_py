@@ -130,12 +130,22 @@ def refresh_game_board():
             else:
                 gameDisplay.blit(tile_unfliped,(coord_x, coord_y))
 
+def reveal_mine():
+    for x in range(board_row):
+        for y in range(board_col):
+            # Calculate pygame coordinates
+            coord_y = row_to_coord(x)
+            coord_x = col_to_coord(y)
+            if game_board.board[x][y] == 9:
+                gameDisplay.blit(mine,(coord_x, coord_y))
+
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf', 50)
     textSurf = largeText.render(text, True, font_black)
     textRect = textSurf.get_rect()
     textRect.center = ((display_width/2), (display_height/2))
-    gameDisplay.blit(textSurf, textRect)
+    reveal_mine()
+    # gameDisplay.blit(textSurf, textRect)
     pygame.display.update()
     time.sleep(2)
 #################################################
