@@ -1,5 +1,6 @@
 import Matrix
 import pygame
+import time
 
 BORDER_WIDTH = 12
 HEADER_HEIGHT = 50
@@ -15,10 +16,6 @@ board_col = int(board_col)
 board_mines = int(board_mines)
 
 game_board = Matrix.Matrix()
-game_board.resize(board_row, board_col, board_mines)
-game_board.get_count()
-game_board.print_board()
-# game_board.print_mask()
 
 ############ Initiate pygame settings ###########
 pygame.init()
@@ -28,9 +25,6 @@ display_height = TILE_SIZE * board_row + 2*BORDER_WIDTH + HEADER_HEIGHT
 
 print(display_height)
 print(display_width)
-
-quit_game = False
-bombed = False
 
 tile_unfliped = pygame.image.load('img/tile.png')
 tile_pressed = pygame.image.load('img/tile_pressed.png')
@@ -54,6 +48,7 @@ clock = pygame.time.Clock()
 background_grey = (158, 158, 158)
 border_shadow = (100, 100, 100)
 border_light = (244, 244, 244)
+font_black = (0, 0, 0)
 #################################################
 
 ############### Helper functions ################
@@ -134,45 +129,70 @@ def refresh_game_board():
                     gameDisplay.blit(tile_pressed,(coord_x, coord_y))
             else:
                 gameDisplay.blit(tile_unfliped,(coord_x, coord_y))
+
+def message_display(text):
+    largeText = pygame.font.Font('freesansbold.ttf', 50)
+    textSurf = largeText.render(text, True, font_black)
+    textRect = textSurf.get_rect()
+    textRect.center = ((display_width/2), (display_height/2))
+    gameDisplay.blit(textSurf, textRect)
+    pygame.display.update()
+    time.sleep(2)
 #################################################
 
-gameDisplay.fill(background_grey)
-draw_all_boxes()
+################ Main game loop #################
+def game_loop():
+    bombed = False
 
-while not quit_game:
+    game_board.resize(board_row, board_col, board_mines)
+    game_board.get_count()
+    game_board.print_board()
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            quit_game = True
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                pos = get_clicked_pos(pygame.mouse.get_pos())
-                ######### Probably need to change #########
-                if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
-                    continue
-                ###########################################
-                if game_board.flagged[pos[0]][pos[1]] == True:
-                    break
-                game_board.reveal(pos[0], pos[1])
-                bombed = (game_board.board[pos[0]][pos[1]] == 9)
-                # print(bombed)
-            elif pygame.mouse.get_pressed() == (0, 0, 1):
-                pos = get_clicked_pos(pygame.mouse.get_pos())
-                ######### Probably need to change #########
-                if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
-                    continue
-                ###########################################
-                if game_board.status[pos[0]][pos[1]] == True:
-                    break
-                game_board.flagged[pos[0]][pos[1]] = not game_board.flagged[pos[0]][pos[1]]
+    gameDisplay.fill(background_grey)
+    draw_all_boxes()
 
-            elif pygame.mouse.get_pressed() == (0, 1, 0):
-                print(pygame.mouse.get_pos())
+    while True:
 
-    refresh_game_board()
-    pygame.display.update()
-    clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pygame.mouse.get_pressed() == (1, 0, 0):
+                    pos = get_clicked_pos(pygame.mouse.get_pos())
+                    ######### Probably need to change #########
+                    if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
+                        continue
+                    ###########################################
+                    if game_board.flagged[pos[0]][pos[1]] == True:
+                        break
+                    game_board.reveal(pos[0], pos[1])
+                    bombed = (game_board.board[pos[0]][pos[1]] == 9)
+                    # print(bombed)
+                elif pygame.mouse.get_pressed() == (0, 0, 1):
+                    pos = get_clicked_pos(pygame.mouse.get_pos())
+                    ######### Probably need to change #########
+                    if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
+                        continue
+                    ###########################################
+                    if game_board.status[pos[0]][pos[1]] == True:
+                        break
+                    game_board.flagged[pos[0]][pos[1]] = not game_board.flagged[pos[0]][pos[1]]
 
+                elif pygame.mouse.get_pressed() == (0, 1, 0):
+                    print(pygame.mouse.get_pos())
+
+        if bombed:
+            break
+
+        refresh_game_board()
+        pygame.display.update()
+        clock.tick(60)
+#################################################
+
+while True:
+    game_loop()
+    message_display('Bombed')
 pygame.quit()
 quit()
 
