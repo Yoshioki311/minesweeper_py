@@ -10,7 +10,6 @@ class Matrix(object):
 
         # Board related
         self.board = []
-        self.mask = []
         self.status = []
         self.flagged = []
 
@@ -43,13 +42,6 @@ class Matrix(object):
                 else:
                     self.board[x].append(0)
 
-        # Initiate game board mask
-        self.mask = []
-        for x in range(row):
-            self.mask.append([])
-            for y in range(col):
-                self.mask[x].append('-')
-
         # Initiate game cell status
         self.status = []
         for x in range(row):
@@ -68,18 +60,11 @@ class Matrix(object):
         if self.status[row][col] == True:
             return
         
-        # 分情况
-        if self.board[row][col] == 9:
+        if self.board[row][col] != 0:
             self.status[row][col] = True
-            self.mask[row][col] = self.board[row][col]
-            return
-        elif self.board[row][col] != 0:
-            self.status[row][col] = True
-            self.mask[row][col] = self.board[row][col]
             return
         else:
             self.status[row][col] = True
-            self.mask[row][col] = self.board[row][col]
             self.reveal(row+1, col)
             self.reveal(row-1, col)
             self.reveal(row, col+1)
@@ -129,12 +114,6 @@ class Matrix(object):
         for x in range(len(self.board)):
             for y in range(len(self.board[x])):
                 print(self.board[x][y], end=" ")
-            print(" ")
-        print("\n")
-    def print_mask(self):
-        for x in range(len(self.mask)):
-            for y in range(len(self.mask[x])):
-                print(self.mask[x][y], end=" ")
             print(" ")
         print("\n")
     ##########################################################

@@ -205,11 +205,3 @@ while True:
     message_display('Bombed')
 pygame.quit()
 quit()
-
-    # user_row = input("Enter the row you would like to reveal: ")
-    # user_col = input("Enter the column you would like to reveal: ")
-    # user_row = int(user_row) - 1
-    # user_col = int(user_col) - 1
-
-    # game_state = game_board.reveal(user_row, user_col)
-    # game_board.print_mask()
