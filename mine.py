@@ -1,6 +1,7 @@
 import Matrix
 import pygame
 import time
+# from pygame.locals import *
 
 BORDER_WIDTH = 12
 HEADER_HEIGHT = 50
@@ -39,7 +40,7 @@ fliped_eight = pygame.image.load('img/fliped_eight.png')
 mine = pygame.image.load('img/mine.png')
 flag = pygame.image.load('img/flag.png')
 
-gameDisplay = pygame.display.set_mode((display_width, display_height))
+gameDisplay = pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE)
 pygame.display.set_caption('MineSweeper')
 clock = pygame.time.Clock()
 #################################################
@@ -49,6 +50,7 @@ background_grey = (158, 158, 158)
 border_shadow = (100, 100, 100)
 border_light = (244, 244, 244)
 font_white = (255, 255, 255)
+font_black = (0, 0, 0)
 #################################################
 
 ############### Helper functions ################
@@ -192,6 +194,11 @@ def game_loop():
 
                 elif pygame.mouse.get_pressed() == (0, 1, 0):
                     print(pygame.mouse.get_pos())
+            if event.type == pygame.VIDEORESIZE:
+                print('resize!')
+                surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                gameDisplay.fill(background_grey)
+                draw_all_boxes()
 
         refresh_game_board()
 
