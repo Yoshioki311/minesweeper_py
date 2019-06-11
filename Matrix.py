@@ -20,12 +20,14 @@ class Matrix(object):
 
         # Array containing mine location
         self.mine_loc = []
-        for i in range(mines):
+        while len(self.mine_loc) != mines:
+            duplicate = False
             rand_loc = [random.randint(0, row - 1), random.randint(0, col - 1)]
             for loc in self.mine_loc:
-                while rand_loc == loc:
-                    rand_loc = [random.randint(0, row - 1), random.randint(0, col - 1)]
-            self.mine_loc.append(rand_loc)
+                if rand_loc == loc:
+                    duplicate = True
+            if not duplicate:
+                self.mine_loc.append(rand_loc)
         
         # Initiate game board
         self.board = []
