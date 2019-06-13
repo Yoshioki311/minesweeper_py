@@ -51,6 +51,9 @@ border_shadow = (100, 100, 100)
 border_light = (244, 244, 244)
 font_white = (255, 255, 255)
 font_black = (0, 0, 0)
+diff_easy_blue = (168, 201, 255)
+diff_modest_blue = (124, 174, 255)
+diff_hard_blue = (86, 151, 255)
 #################################################
 
 ############### Helper functions ################
@@ -171,6 +174,14 @@ def game_intro():
         textRect = textSurf.get_rect()
         textRect.center = ((display_width/2),HEADER_HEIGHT)
         gameDisplay.blit(textSurf, textRect)
+
+        easy_pos = ((display_width/2)-50,(display_height/2)-30,100,40)
+        modest_pos = ((display_width/2)-50,(display_height/2)+20,100,40)
+        hard_pos = ((display_width/2)-50,(display_height/2)+70,100,40)
+
+        pygame.draw.rect(gameDisplay, diff_easy_blue,easy_pos)
+        pygame.draw.rect(gameDisplay, diff_modest_blue, modest_pos)
+        pygame.draw.rect(gameDisplay, diff_hard_blue, hard_pos)
 
         pygame.display.update()
         clock.tick(15)
