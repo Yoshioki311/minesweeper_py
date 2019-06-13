@@ -154,6 +154,27 @@ def reveal_mine():
 #################################################
 
 ################ Main game loop #################
+def game_intro():
+
+    intro = True
+
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                print("Quit")
+                pygame.quit()
+                quit()
+                
+        gameDisplay.fill(background_grey)
+        largeText = pygame.font.Font('freesansbold.ttf',30)
+        textSurf = largeText.render('Minesweeper!', True, font_white)
+        textRect = textSurf.get_rect()
+        textRect.center = ((display_width/2),HEADER_HEIGHT)
+        gameDisplay.blit(textSurf, textRect)
+
+        pygame.display.update()
+        clock.tick(15)
+
 def game_loop():
     bombed = False
 
@@ -215,6 +236,7 @@ def game_loop():
         clock.tick(60)
 #################################################
 
+game_intro()
 while True:
     game_loop()
     
