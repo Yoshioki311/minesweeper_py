@@ -54,6 +54,7 @@ font_black = (0, 0, 0)
 diff_easy_blue = (168, 201, 255)
 diff_modest_blue = (124, 174, 255)
 diff_hard_blue = (86, 151, 255)
+diff_hov_blue = (37, 60, 96)
 #################################################
 
 ############### Helper functions ################
@@ -179,9 +180,23 @@ def game_intro():
         modest_pos = ((display_width/2)-50,(display_height/2)+20,100,40)
         hard_pos = ((display_width/2)-50,(display_height/2)+70,100,40)
 
-        pygame.draw.rect(gameDisplay, diff_easy_blue,easy_pos)
-        pygame.draw.rect(gameDisplay, diff_modest_blue, modest_pos)
-        pygame.draw.rect(gameDisplay, diff_hard_blue, hard_pos)
+        mouse_pos = pygame.mouse.get_pos()
+
+        if (((display_width/2)-50 < mouse_pos[0] and mouse_pos[0] < (display_width/2)+50) and 
+            ((display_height/2)-30 < mouse_pos[1] and mouse_pos[1] < (display_height/2)+10)):
+            pygame.draw.rect(gameDisplay, diff_hov_blue, easy_pos)
+        else:
+            pygame.draw.rect(gameDisplay, diff_easy_blue, easy_pos)
+        if (((display_width/2)-50 < mouse_pos[0] and mouse_pos[0] < (display_width/2)+50) and 
+            ((display_height/2)+20 < mouse_pos[1] and mouse_pos[1] < (display_height/2)+60)):
+            pygame.draw.rect(gameDisplay, diff_hov_blue, modest_pos)
+        else:
+            pygame.draw.rect(gameDisplay, diff_modest_blue, modest_pos)
+        if (((display_width/2)-50 < mouse_pos[0] and mouse_pos[0] < (display_width/2)+50) and 
+            ((display_height/2)+70 < mouse_pos[1] and mouse_pos[1] < (display_height/2)+110)):
+            pygame.draw.rect(gameDisplay, diff_hov_blue, hard_pos)
+        else:
+            pygame.draw.rect(gameDisplay, diff_hard_blue, hard_pos)            
 
         pygame.display.update()
         clock.tick(15)
