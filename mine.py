@@ -7,6 +7,8 @@ BORDER_WIDTH = 12
 HEADER_HEIGHT = 50
 TILE_SIZE = 23
 BORDER_LINE_WEIGHT = 3
+DIFF_WIDTH = 100
+DIFF_HEIGHT = 40
 
 board_col = input("How wide should the board be? ")
 board_row = input("How tall should the board be? ")
@@ -68,6 +70,23 @@ def get_clicked_pos(mouse_pos):
     clicked_row = round((mouse_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
     clicked_col = round((mouse_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
     return (clicked_row, clicked_col)
+
+def create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color):
+    smallText = pygame.font.Font("freesansbold.ttf",15)
+    textSurf = smallText.render(text, True, text_color)
+    
+    mouse_pos = pygame.mouse.get_pos()
+
+    if ((x+w > mouse_pos[0] and mouse_pos[0] > x) and 
+        (y+h > mouse_pos[1] and mouse_pos[1] > y)):
+        pygame.draw.rect(gameDisplay, hov_color,(x,y,w,h))
+        textSurf = smallText.render(text, True, text_hov_color)
+    else:
+        pygame.draw.rect(gameDisplay, color,(x,y,w,h))
+    
+    textRect = textSurf.get_rect()
+    textRect.center = ( (x+(w/2)), (y+(h/2)) )
+    gameDisplay.blit(textSurf, textRect)
 #################################################
 
 ############# GUI related functions #############
@@ -171,32 +190,22 @@ def game_intro():
                 
         gameDisplay.fill(background_grey)
         largeText = pygame.font.Font('freesansbold.ttf',30)
-        textSurf = largeText.render('Minesweeper!', True, font_white)
-        textRect = textSurf.get_rect()
-        textRect.center = ((display_width/2),HEADER_HEIGHT)
-        gameDisplay.blit(textSurf, textRect)
+        TextSurf = largeText.render('Minesweeper!', True, font_white)
+        TextRect = TextSurf.get_rect()
+        TextRect.center = ((display_width/2),HEADER_HEIGHT)
+        gameDisplay.blit(TextSurf, TextRect)
 
-        easy_pos = ((display_width/2)-50,(display_height/2)-30,100,40)
-        modest_pos = ((display_width/2)-50,(display_height/2)+20,100,40)
-        hard_pos = ((display_width/2)-50,(display_height/2)+70,100,40)
+        easy_pos = ((display_width/2)-50,(display_height/2)-30)
+        modest_pos = ((display_width/2)-50,(display_height/2)+20)
+        hard_pos = ((display_width/2)-50,(display_height/2)+70)
 
-        mouse_pos = pygame.mouse.get_pos()
-
-        if (((display_width/2)-50 < mouse_pos[0] and mouse_pos[0] < (display_width/2)+50) and 
-            ((display_height/2)-30 < mouse_pos[1] and mouse_pos[1] < (display_height/2)+10)):
-            pygame.draw.rect(gameDisplay, diff_hov_blue, easy_pos)
-        else:
-            pygame.draw.rect(gameDisplay, diff_easy_blue, easy_pos)
-        if (((display_width/2)-50 < mouse_pos[0] and mouse_pos[0] < (display_width/2)+50) and 
-            ((display_height/2)+20 < mouse_pos[1] and mouse_pos[1] < (display_height/2)+60)):
-            pygame.draw.rect(gameDisplay, diff_hov_blue, modest_pos)
-        else:
-            pygame.draw.rect(gameDisplay, diff_modest_blue, modest_pos)
-        if (((display_width/2)-50 < mouse_pos[0] and mouse_pos[0] < (display_width/2)+50) and 
-            ((display_height/2)+70 < mouse_pos[1] and mouse_pos[1] < (display_height/2)+110)):
-            pygame.draw.rect(gameDisplay, diff_hov_blue, hard_pos)
-        else:
-            pygame.draw.rect(gameDisplay, diff_hard_blue, hard_pos)            
+        # create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color)
+        create_button('Easy', easy_pos[0], easy_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
+                diff_easy_blue, diff_hov_blue, font_black, font_white)
+        create_button('Modest', modest_pos[0], modest_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
+                diff_modest_blue, diff_hov_blue, font_black, font_white)
+        create_button('Hard', hard_pos[0], hard_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
+                diff_hard_blue, diff_hov_blue, font_black, font_white)        
 
         pygame.display.update()
         clock.tick(15)
