@@ -71,16 +71,19 @@ def get_clicked_pos(mouse_pos):
     clicked_col = round((mouse_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
     return (clicked_row, clicked_col)
 
-def create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color):
+def create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color, action = None):
     smallText = pygame.font.Font("freesansbold.ttf",15)
     textSurf = smallText.render(text, True, text_color)
     
     mouse_pos = pygame.mouse.get_pos()
+    clicked = pygame.mouse.get_pressed()
 
     if ((x+w > mouse_pos[0] and mouse_pos[0] > x) and 
         (y+h > mouse_pos[1] and mouse_pos[1] > y)):
         pygame.draw.rect(gameDisplay, hov_color,(x,y,w,h))
         textSurf = smallText.render(text, True, text_hov_color)
+        if clicked[0] == 1 and action != None:
+            action()
     else:
         pygame.draw.rect(gameDisplay, color,(x,y,w,h))
     
@@ -201,7 +204,7 @@ def game_intro():
 
         # create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color)
         create_button('Easy', easy_pos[0], easy_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
-                diff_easy_blue, diff_hov_blue, font_black, font_white)
+                diff_easy_blue, diff_hov_blue, font_black, font_white, game_looooop)
         create_button('Modest', modest_pos[0], modest_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
                 diff_modest_blue, diff_hov_blue, font_black, font_white)
         create_button('Hard', hard_pos[0], hard_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
@@ -269,11 +272,15 @@ def game_loop():
         
         pygame.display.update()
         clock.tick(60)
+
+def game_looooop():
+    while True:
+        game_loop()
 #################################################
 
 game_intro()
-while True:
-    game_loop()
+# while True:
+#     game_loop()
     
 pygame.quit()
 quit()
