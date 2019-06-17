@@ -10,24 +10,19 @@ BORDER_LINE_WEIGHT = 3
 DIFF_WIDTH = 100
 DIFF_HEIGHT = 40
 
-board_col = input("How wide should the board be? ")
-board_row = input("How tall should the board be? ")
-board_mines = input("how many mines should there be? ")
-
-board_row = int(board_row)
-board_col = int(board_col)
-board_mines = int(board_mines)
-
 game_board = Matrix.Matrix()
 
 ############ Initiate pygame settings ###########
 pygame.init()
 
-display_width = TILE_SIZE * board_col + 2*BORDER_WIDTH
-display_height = TILE_SIZE * board_row + 2*BORDER_WIDTH + HEADER_HEIGHT
+# display_width = TILE_SIZE * board_col + 2*BORDER_WIDTH
+# display_height = TILE_SIZE * board_row + 2*BORDER_WIDTH + HEADER_HEIGHT
 
-print(display_height)
-print(display_width)
+display_width = TILE_SIZE * 30 + 2*BORDER_WIDTH
+display_height = TILE_SIZE * 16 + 2*BORDER_WIDTH + HEADER_HEIGHT
+
+# print(display_height)
+# print(display_width)
 
 tile_unfliped = pygame.image.load('img/tile.png')
 tile_pressed = pygame.image.load('img/tile_pressed.png')
@@ -125,7 +120,7 @@ def draw_all_boxes():
                          [BORDER_WIDTH-BORDER_LINE_WEIGHT, display_height-BORDER_WIDTH+BORDER_LINE_WEIGHT]]
     draw_box(lower_inner_upper, lower_inner_lower)
 
-def refresh_game_board():
+def refresh_game_board(board_row, board_col):
     for x in range(board_row):
         for y in range(board_col):
             # Calculate pygame coordinates
@@ -167,7 +162,7 @@ def message_display(text):
     pygame.display.update()
     time.sleep(2)
 
-def reveal_mine():
+def reveal_mine(board_row, board_col):
     for x in range(board_row):
         for y in range(board_col):
             # Calculate pygame coordinates
@@ -204,16 +199,16 @@ def game_intro():
 
         # create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color)
         create_button('Easy', easy_pos[0], easy_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
-                diff_easy_blue, diff_hov_blue, font_black, font_white, game_looooop)
+                diff_easy_blue, diff_hov_blue, font_black, font_white, easy_game)
         create_button('Modest', modest_pos[0], modest_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
-                diff_modest_blue, diff_hov_blue, font_black, font_white)
+                diff_modest_blue, diff_hov_blue, font_black, font_white, modest_game)
         create_button('Hard', hard_pos[0], hard_pos[1], DIFF_WIDTH, DIFF_HEIGHT, 
-                diff_hard_blue, diff_hov_blue, font_black, font_white)        
+                diff_hard_blue, diff_hov_blue, font_black, font_white, hard_game)     
 
         pygame.display.update()
         clock.tick(15)
 
-def game_loop():
+def game_loop(board_row, board_col, board_mines):
     bombed = False
 
     game_board.reset(board_row, board_col, board_mines)
@@ -259,7 +254,7 @@ def game_loop():
                 gameDisplay.fill(background_grey)
                 draw_all_boxes()
 
-        refresh_game_board()
+        refresh_game_board(board_row, board_col)
 
         flipped = game_board.count_revealed();
         if flipped == board_row * board_col - board_mines:
@@ -267,15 +262,23 @@ def game_loop():
             break
 
         if bombed:
-            reveal_mine()
+            reveal_mine(board_row, board_col)
             break
         
         pygame.display.update()
         clock.tick(60)
 
-def game_looooop():
+def easy_game():
     while True:
-        game_loop()
+        game_loop(9, 9, 10)
+
+def modest_game():
+    while True:
+        game_loop(16, 16, 40)
+
+def hard_game():
+    while True:
+        game_loop(16, 30, 99)
 #################################################
 
 game_intro()
