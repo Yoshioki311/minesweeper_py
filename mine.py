@@ -186,9 +186,7 @@ def reveal_mine(board_row, board_col):
 ################ Main game loop #################
 def game_intro():
 
-    intro = True
-
-    while intro:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 print("Quit")
@@ -259,6 +257,10 @@ def game_loop(board_row, board_col, board_mines):
                         break
                     game_board.reveal(pos[0], pos[1])
                     bombed = (game_board.board[pos[0]][pos[1]] == 9)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("Escape")
+                    return False
             if event.type == pygame.VIDEORESIZE:
                 print('resize!')
                 surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
@@ -270,26 +272,29 @@ def game_loop(board_row, board_col, board_mines):
         flipped = game_board.count_revealed();
         if flipped == board_row * board_col - board_mines:
             message_display('Win!')
-            break
+            return True
 
         if bombed:
             reveal_mine(board_row, board_col)
-            break
+            return True
         
         pygame.display.update()
         clock.tick(60)
 
 def easy_game():
-    while True:
-        game_loop(9, 9, 10)
+    cont = True
+    while cont:
+        cont = game_loop(9, 9, 10)
 
 def modest_game():
-    while True:
-        game_loop(16, 16, 40)
+    cont = True
+    while cont:
+        cont = game_loop(16, 16, 40)
 
 def hard_game():
-    while True:
-        game_loop(16, 30, 99)
+    cont = True
+    while cont:
+        cont = game_loop(16, 30, 99)
 #################################################
 
 game_intro()
