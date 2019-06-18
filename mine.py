@@ -153,6 +153,15 @@ def refresh_game_board(board_row, board_col):
             else:
                 gameDisplay.blit(tile_unfliped,(coord_x, coord_y))
 
+            if pygame.mouse.get_pressed() == (1, 0, 0):
+                pos = get_clicked_pos(pygame.mouse.get_pos())
+                if ((pos[0] >= 0 and pos[0] < board_row) and 
+                    (pos[1] >= 0 and pos[1] < board_col) and
+                    game_board.flagged[pos[0]][pos[1]] == False and
+                    game_board.status[pos[0]][pos[1]] == False):
+                    coord = (col_to_coord(pos[1]), row_to_coord(pos[0]))
+                    gameDisplay.blit(tile_pressed, coord)
+
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf', 50)
     textSurf = largeText.render(text, True, font_white)
@@ -226,16 +235,7 @@ def game_loop(board_row, board_col, board_mines):
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed() == (1, 0, 0):
-                    pos = get_clicked_pos(pygame.mouse.get_pos())
-                    ######### Probably need to change #########
-                    if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
-                        continue
-                    ###########################################
-                    if game_board.flagged[pos[0]][pos[1]] == True:
-                        break
-                    game_board.reveal(pos[0], pos[1])
-                    bombed = (game_board.board[pos[0]][pos[1]] == 9)
-                    # print(bombed)
+                    pass
                 elif pygame.mouse.get_pressed() == (0, 0, 1):
                     pos = get_clicked_pos(pygame.mouse.get_pos())
                     ######### Probably need to change #########
@@ -248,6 +248,17 @@ def game_loop(board_row, board_col, board_mines):
 
                 elif pygame.mouse.get_pressed() == (0, 1, 0):
                     print(pygame.mouse.get_pos())
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    pos = get_clicked_pos(pygame.mouse.get_pos())
+                    ######### Probably need to change #########
+                    if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
+                        continue
+                    ###########################################
+                    if game_board.flagged[pos[0]][pos[1]] == True:
+                        break
+                    game_board.reveal(pos[0], pos[1])
+                    bombed = (game_board.board[pos[0]][pos[1]] == 9)
             if event.type == pygame.VIDEORESIZE:
                 print('resize!')
                 surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
