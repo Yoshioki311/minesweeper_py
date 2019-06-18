@@ -261,6 +261,9 @@ def game_loop(board_row, board_col, board_mines):
                 if event.key == pygame.K_ESCAPE:
                     print("Escape")
                     return False
+                if event.key == pygame.K_SPACE:
+                    print("Restart")
+                    return True
             if event.type == pygame.VIDEORESIZE:
                 print('resize!')
                 surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
