@@ -21,6 +21,9 @@ pygame.init()
 display_width = TILE_SIZE * 30 + 2*BORDER_WIDTH
 display_height = TILE_SIZE * 16 + 2*BORDER_WIDTH + HEADER_HEIGHT
 
+display_width_middle = display_width / 2
+display_height_middle = display_height / 2
+
 # print(display_height)
 # print(display_width)
 
@@ -61,9 +64,15 @@ def row_to_coord(row):
 def col_to_coord(col):
     return col * TILE_SIZE + BORDER_WIDTH
 
-def get_clicked_pos(mouse_pos):
-    clicked_row = round((mouse_pos[1] - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
-    clicked_col = round((mouse_pos[0] - 2*BORDER_WIDTH) / TILE_SIZE)
+def get_board_width(board_col):
+    return TILE_SIZE * board_col + 2*BORDER_WIDTH
+
+def get_board_height(board_row):
+    return TILE_SIZE * board_row + 2*BORDER_WIDTH + HEADER_HEIGHT
+
+def get_clicked_pos(mouse_pos, x_offset, y_offset):
+    clicked_row = round((mouse_pos[1] - y_offset - 2*BORDER_WIDTH - HEADER_HEIGHT) / TILE_SIZE)
+    clicked_col = round((mouse_pos[0] - x_offset - 2*BORDER_WIDTH) / TILE_SIZE)
     return (clicked_row, clicked_col)
 
 def create_button(text, x, y, w, h, color, hov_color, text_color, text_hov_color, action = None):
@@ -95,32 +104,32 @@ def draw_box(list_upper, list_lower):
     pygame.draw.lines(gameDisplay, border_shadow, False, list_upper, BORDER_LINE_WEIGHT)
     pygame.draw.lines(gameDisplay, border_light, False, list_lower, BORDER_LINE_WEIGHT)
 
-def draw_all_boxes():
-    outer_box_upper = [[display_width-BORDER_LINE_WEIGHT, 0],
-                       [display_width-BORDER_LINE_WEIGHT, display_height-BORDER_LINE_WEIGHT], 
-                       [0, display_height-BORDER_LINE_WEIGHT]]
-    outer_box_lower = [[0, display_height-BORDER_LINE_WEIGHT], 
-                       [0, 0], 
-                       [display_width-BORDER_LINE_WEIGHT, 0]]
+def draw_all_boxes(board_top, board_bottom, board_left, board_right):
+    outer_box_upper = [[board_right, board_top],
+                       [board_right, board_bottom], 
+                       [board_left, board_bottom]]
+    outer_box_lower = [[board_left, board_bottom], 
+                       [board_left, board_top], 
+                       [board_right, board_top]]
     draw_box(outer_box_upper, outer_box_lower)
 
-    upper_inner_upper = [[BORDER_WIDTH-BORDER_LINE_WEIGHT, HEADER_HEIGHT-BORDER_LINE_WEIGHT],
-                         [BORDER_WIDTH-BORDER_LINE_WEIGHT, BORDER_WIDTH-BORDER_LINE_WEIGHT],
-                         [display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, BORDER_WIDTH-BORDER_LINE_WEIGHT]]
-    upper_inner_lower = [[display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, BORDER_WIDTH-BORDER_LINE_WEIGHT],
-                         [display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, HEADER_HEIGHT-BORDER_LINE_WEIGHT],
-                         [BORDER_WIDTH-BORDER_LINE_WEIGHT, HEADER_HEIGHT-BORDER_LINE_WEIGHT]]
+    upper_inner_upper = [[board_left+BORDER_WIDTH-BORDER_LINE_WEIGHT, board_top+HEADER_HEIGHT-BORDER_LINE_WEIGHT],
+                         [board_left+BORDER_WIDTH-BORDER_LINE_WEIGHT, board_top+BORDER_WIDTH-BORDER_LINE_WEIGHT],
+                         [board_right-BORDER_WIDTH+BORDER_LINE_WEIGHT, board_top+BORDER_WIDTH-BORDER_LINE_WEIGHT]]
+    upper_inner_lower = [[board_right-BORDER_WIDTH+BORDER_LINE_WEIGHT, board_top+BORDER_WIDTH-BORDER_LINE_WEIGHT],
+                         [board_right-BORDER_WIDTH+BORDER_LINE_WEIGHT, board_top+HEADER_HEIGHT-BORDER_LINE_WEIGHT],
+                         [board_left+BORDER_WIDTH-BORDER_LINE_WEIGHT, board_top+HEADER_HEIGHT-BORDER_LINE_WEIGHT]]
     draw_box(upper_inner_upper, upper_inner_lower)
 
-    lower_inner_upper = [[BORDER_WIDTH-BORDER_LINE_WEIGHT, display_height-BORDER_WIDTH+BORDER_LINE_WEIGHT],
-                         [BORDER_WIDTH-BORDER_LINE_WEIGHT, HEADER_HEIGHT+BORDER_WIDTH-BORDER_LINE_WEIGHT],
-                         [display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, HEADER_HEIGHT+BORDER_WIDTH-BORDER_LINE_WEIGHT]]
-    lower_inner_lower = [[display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, HEADER_HEIGHT+BORDER_WIDTH-BORDER_LINE_WEIGHT],
-                         [display_width-BORDER_WIDTH+BORDER_LINE_WEIGHT, display_height-BORDER_WIDTH+BORDER_LINE_WEIGHT],
-                         [BORDER_WIDTH-BORDER_LINE_WEIGHT, display_height-BORDER_WIDTH+BORDER_LINE_WEIGHT]]
+    lower_inner_upper = [[board_left+BORDER_WIDTH-BORDER_LINE_WEIGHT, board_bottom-BORDER_WIDTH+BORDER_LINE_WEIGHT],
+                         [board_left+BORDER_WIDTH-BORDER_LINE_WEIGHT, board_top+HEADER_HEIGHT+BORDER_WIDTH-BORDER_LINE_WEIGHT],
+                         [board_right-BORDER_WIDTH+BORDER_LINE_WEIGHT, board_top+HEADER_HEIGHT+BORDER_WIDTH-BORDER_LINE_WEIGHT]]
+    lower_inner_lower = [[board_right-BORDER_WIDTH+BORDER_LINE_WEIGHT, board_top+HEADER_HEIGHT+BORDER_WIDTH-BORDER_LINE_WEIGHT],
+                         [board_right-BORDER_WIDTH+BORDER_LINE_WEIGHT, board_bottom-BORDER_WIDTH+BORDER_LINE_WEIGHT],
+                         [board_left+BORDER_WIDTH-BORDER_LINE_WEIGHT, board_bottom-BORDER_WIDTH+BORDER_LINE_WEIGHT]]
     draw_box(lower_inner_upper, lower_inner_lower)
 
-def refresh_game_board(board_row, board_col):
+def refresh_game_board(board_row, board_col, x_offset, y_offset):
     for x in range(board_row):
         for y in range(board_col):
             # Calculate pygame coordinates
@@ -128,38 +137,38 @@ def refresh_game_board(board_row, board_col):
             coord_x = col_to_coord(y)
             # Tile in fliped state
             if game_board.flagged[x][y] == True:
-                gameDisplay.blit(flag,(coord_x, coord_y))
+                gameDisplay.blit(flag,(coord_x+x_offset, coord_y+y_offset))
             elif game_board.status[x][y] == True:
                 if game_board.board[x][y] == 1:
-                    gameDisplay.blit(fliped_one,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_one,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 2:
-                    gameDisplay.blit(fliped_two,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_two,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 3:
-                    gameDisplay.blit(fliped_three,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_three,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 4:
-                    gameDisplay.blit(fliped_four,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_four,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 5:
-                    gameDisplay.blit(fliped_five,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_five,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 6:
-                    gameDisplay.blit(fliped_six,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_six,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 7:
-                    gameDisplay.blit(fliped_seven,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_seven,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 8:
-                    gameDisplay.blit(fliped_eight,(coord_x, coord_y))
+                    gameDisplay.blit(fliped_eight,(coord_x+x_offset, coord_y+y_offset))
                 elif game_board.board[x][y] == 9:
-                    gameDisplay.blit(mine,(coord_x, coord_y))
+                    gameDisplay.blit(mine,(coord_x+x_offset, coord_y+y_offset))
                 else:
-                    gameDisplay.blit(tile_pressed,(coord_x, coord_y))
+                    gameDisplay.blit(tile_pressed,(coord_x+x_offset, coord_y+y_offset))
             else:
-                gameDisplay.blit(tile_unfliped,(coord_x, coord_y))
+                gameDisplay.blit(tile_unfliped,(coord_x+x_offset, coord_y+y_offset))
 
             if pygame.mouse.get_pressed() == (1, 0, 0):
-                pos = get_clicked_pos(pygame.mouse.get_pos())
+                pos = get_clicked_pos(pygame.mouse.get_pos(), x_offset, y_offset)
                 if ((pos[0] >= 0 and pos[0] < board_row) and 
                     (pos[1] >= 0 and pos[1] < board_col) and
                     game_board.flagged[pos[0]][pos[1]] == False and
                     game_board.status[pos[0]][pos[1]] == False):
-                    coord = (col_to_coord(pos[1]), row_to_coord(pos[0]))
+                    coord = (col_to_coord(pos[1])+x_offset, row_to_coord(pos[0])+y_offset)
                     gameDisplay.blit(tile_pressed, coord)
 
 def message_display(text):
@@ -171,14 +180,14 @@ def message_display(text):
     pygame.display.update()
     time.sleep(2)
 
-def reveal_mine(board_row, board_col):
+def reveal_mine(board_row, board_col, x_offset, y_offset):
     for x in range(board_row):
         for y in range(board_col):
             # Calculate pygame coordinates
             coord_y = row_to_coord(x)
             coord_x = col_to_coord(y)
             if game_board.board[x][y] == 9:
-                gameDisplay.blit(mine,(coord_x, coord_y))
+                gameDisplay.blit(mine,(coord_x+x_offset, coord_y+y_offset))
     pygame.display.update()
     time.sleep(2)
 #################################################
@@ -218,12 +227,23 @@ def game_intro():
 def game_loop(board_row, board_col, board_mines):
     bombed = False
 
+    board_width = get_board_width(board_col)
+    board_height = get_board_height(board_row)
+
+    board_width_middle = board_width / 2
+    board_height_middle = board_height / 2
+
+    board_top = display_height_middle-board_height_middle
+    board_bottom = display_height_middle+board_height_middle
+    board_left = display_width_middle-board_width_middle
+    board_right = display_width_middle+board_width_middle
+
     game_board.reset(board_row, board_col, board_mines)
     game_board.get_count()
     game_board.print_board()
 
     gameDisplay.fill(background_grey)
-    draw_all_boxes()
+    draw_all_boxes(board_top, board_bottom, board_left, board_right)
 
     while True:
 
@@ -235,7 +255,7 @@ def game_loop(board_row, board_col, board_mines):
                 if pygame.mouse.get_pressed() == (1, 0, 0):
                     pass
                 elif pygame.mouse.get_pressed() == (0, 0, 1):
-                    pos = get_clicked_pos(pygame.mouse.get_pos())
+                    pos = get_clicked_pos(pygame.mouse.get_pos(), board_left, board_top)
                     ######### Probably need to change #########
                     if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
                         continue
@@ -248,7 +268,7 @@ def game_loop(board_row, board_col, board_mines):
                     print(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    pos = get_clicked_pos(pygame.mouse.get_pos())
+                    pos = get_clicked_pos(pygame.mouse.get_pos(), board_left, board_top)
                     ######### Probably need to change #########
                     if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
                         continue
@@ -268,9 +288,9 @@ def game_loop(board_row, board_col, board_mines):
                 print('resize!')
                 surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
                 gameDisplay.fill(background_grey)
-                draw_all_boxes()
+                draw_all_boxes(board_top, board_bottom, board_left, board_right)
 
-        refresh_game_board(board_row, board_col)
+        refresh_game_board(board_row, board_col, board_left, board_top)
 
         flipped = game_board.count_revealed();
         if flipped == board_row * board_col - board_mines:
@@ -278,7 +298,7 @@ def game_loop(board_row, board_col, board_mines):
             return True
 
         if bombed:
-            reveal_mine(board_row, board_col)
+            reveal_mine(board_row, board_col, board_left, board_top)
             return True
         
         pygame.display.update()
