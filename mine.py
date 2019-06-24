@@ -42,6 +42,8 @@ mine = pygame.image.load('img/mine.png')
 flag = pygame.image.load('img/flag.png')
 reset_button = pygame.image.load('img/reset_button.png')
 reset_button_pressed = pygame.image.load('img/reset_button_pressed.png')
+reset_bombed = pygame.image.load('img/reset_bombed.png')
+reset_win = pygame.image.load('img/reset_win.png')
 
 gameDisplay = pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE)
 pygame.display.set_caption('MineSweeper')
@@ -174,10 +176,15 @@ def refresh_game_board(board_row, board_col, x_offset, y_offset):
                     coord = (col_to_coord(pos[1])+x_offset, row_to_coord(pos[0])+y_offset)
                     gameDisplay.blit(tile_pressed, coord)
 
-def set_reset_button(board_top):
+def set_reset_button(board_top, bombed, win):
     x_coord = display_width_middle - RESET_SIZE / 2
     y_coord = board_top + BORDER_LINE_WEIGHT + (HEADER_HEIGHT - RESET_SIZE) / 2
-    gameDisplay.blit(reset_button, (x_coord, y_coord))
+    if bombed:
+        gameDisplay.blit(reset_bombed, (x_coord, y_coord))
+    elif win:
+        gameDisplay.blit(reset_win, (x_coord, y_coord))        
+    else:
+        gameDisplay.blit(reset_button, (x_coord, y_coord))
 
     if pygame.mouse.get_pressed() == (1, 0, 0):
         mouse_pos = pygame.mouse.get_pos()
@@ -192,7 +199,6 @@ def message_display(text):
     textRect.center = ((display_width/2), (display_height/2))
     gameDisplay.blit(textSurf, textRect)
     pygame.display.update()
-    time.sleep(2)
 
 def reveal_mine(board_row, board_col, x_offset, y_offset):
     for x in range(board_row):
@@ -203,7 +209,6 @@ def reveal_mine(board_row, board_col, x_offset, y_offset):
             if game_board.board[x][y] == 9:
                 gameDisplay.blit(mine,(coord_x+x_offset, coord_y+y_offset))
     pygame.display.update()
-    time.sleep(2)
 #################################################
 
 ################ Main game loop #################
@@ -311,17 +316,40 @@ def game_loop(board_row, board_col, board_mines):
                 gameDisplay.fill(background_grey)
                 draw_all_boxes(board_top, board_bottom, board_left, board_right)
 
-        refresh_game_board(board_row, board_col, board_left, board_top)
-        set_reset_button(board_top)
+        win = game_board.count_revealed() == board_row * board_col - board_mines;
 
-        flipped = game_board.count_revealed();
-        if flipped == board_row * board_col - board_mines:
+        refresh_game_board(board_row, board_col, board_left, board_top)
+        set_reset_button(board_top, bombed, win)
+
+        if win:
             message_display('Win!')
-            return True
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if (mouse_pos[0] > display_width_middle - RESET_SIZE / 2 and
+                        mouse_pos[0] < display_width_middle + RESET_SIZE / 2 and
+                        mouse_pos[1] > board_top + BORDER_LINE_WEIGHT + (HEADER_HEIGHT - RESET_SIZE) / 2 and
+                        mouse_pos[1] < board_top + BORDER_LINE_WEIGHT + HEADER_HEIGHT / 2 + RESET_SIZE / 2):
+                        print("Win")
+                        return True
 
         if bombed:
             reveal_mine(board_row, board_col, board_left, board_top)
-            return True
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if (mouse_pos[0] > display_width_middle - RESET_SIZE / 2 and
+                        mouse_pos[0] < display_width_middle + RESET_SIZE / 2 and
+                        mouse_pos[1] > board_top + BORDER_LINE_WEIGHT + (HEADER_HEIGHT - RESET_SIZE) / 2 and
+                        mouse_pos[1] < board_top + BORDER_LINE_WEIGHT + HEADER_HEIGHT / 2 + RESET_SIZE / 2):
+                        print("Reset")
+                        return True
         
         pygame.display.update()
         clock.tick(60)
@@ -343,8 +371,6 @@ def hard_game():
 #################################################
 
 game_intro()
-# while True:
-#     game_loop()
     
 pygame.quit()
 quit()
