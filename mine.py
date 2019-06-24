@@ -4,11 +4,12 @@ import time
 # from pygame.locals import *
 
 BORDER_WIDTH = 12
-HEADER_HEIGHT = 50
+HEADER_HEIGHT = 60
 TILE_SIZE = 23
 BORDER_LINE_WEIGHT = 3
 DIFF_WIDTH = 100
 DIFF_HEIGHT = 40
+RESET_SIZE = 35
 
 game_board = Matrix.Matrix()
 
@@ -39,6 +40,8 @@ fliped_seven = pygame.image.load('img/fliped_seven.png')
 fliped_eight = pygame.image.load('img/fliped_eight.png')
 mine = pygame.image.load('img/mine.png')
 flag = pygame.image.load('img/flag.png')
+reset_button = pygame.image.load('img/reset_button.png')
+reset_button_pressed = pygame.image.load('img/reset_button_pressed.png')
 
 gameDisplay = pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE)
 pygame.display.set_caption('MineSweeper')
@@ -171,6 +174,17 @@ def refresh_game_board(board_row, board_col, x_offset, y_offset):
                     coord = (col_to_coord(pos[1])+x_offset, row_to_coord(pos[0])+y_offset)
                     gameDisplay.blit(tile_pressed, coord)
 
+def set_reset_button(board_top):
+    x_coord = display_width_middle - RESET_SIZE / 2
+    y_coord = board_top + BORDER_LINE_WEIGHT + (HEADER_HEIGHT - RESET_SIZE) / 2
+    gameDisplay.blit(reset_button, (x_coord, y_coord))
+
+    if pygame.mouse.get_pressed() == (1, 0, 0):
+        mouse_pos = pygame.mouse.get_pos()
+        if ((mouse_pos[0] > x_coord and mouse_pos[0] < x_coord + RESET_SIZE) and 
+            (mouse_pos[1] > y_coord and mouse_pos[1] < y_coord + RESET_SIZE)):
+            gameDisplay.blit(reset_button_pressed, (x_coord, y_coord))
+
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf', 50)
     textSurf = largeText.render(text, True, font_white)
@@ -268,7 +282,14 @@ def game_loop(board_row, board_col, board_mines):
                     print(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    pos = get_clicked_pos(pygame.mouse.get_pos(), board_left, board_top)
+                    mouse_pos = pygame.mouse.get_pos()
+                    if (mouse_pos[0] > display_width_middle - RESET_SIZE / 2 and
+                        mouse_pos[0] < display_width_middle + RESET_SIZE / 2 and
+                        mouse_pos[1] > board_top + BORDER_LINE_WEIGHT + (HEADER_HEIGHT - RESET_SIZE) / 2 and
+                        mouse_pos[1] < board_top + BORDER_LINE_WEIGHT + HEADER_HEIGHT / 2 + RESET_SIZE / 2):
+                        print("Reset")
+                        return True
+                    pos = get_clicked_pos(mouse_pos, board_left, board_top)
                     ######### Probably need to change #########
                     if pos[0] < 0 or pos[0] >= board_row or pos[1] < 0 or pos[1] >= board_col:
                         continue
@@ -291,6 +312,7 @@ def game_loop(board_row, board_col, board_mines):
                 draw_all_boxes(board_top, board_bottom, board_left, board_right)
 
         refresh_game_board(board_row, board_col, board_left, board_top)
+        set_reset_button(board_top)
 
         flipped = game_board.count_revealed();
         if flipped == board_row * board_col - board_mines:
